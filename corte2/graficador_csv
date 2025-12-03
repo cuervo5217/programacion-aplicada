@@ -1,0 +1,39 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+try:
+    df = pd.read_csv('adc_log.csv')
+except FileNotFoundError:
+    print("Error: El archivo 'adc_log.csv' no fue encontrado.")
+    exit()
+
+df['Tiempo'] = pd.to_datetime(df['Fecha'] + ' ' + df['Hora'])
+df.set_index('Tiempo', inplace=True)
+
+fig, ax1 = plt.subplots(figsize=(12, 6)) 
+
+fig.suptitle('Registro de Voltaje y Lectura RAW del ADC a lo Largo del Tiempo', fontsize=16)
+
+color = 'tab:blue'
+ax1.set_xlabel('Tiempo')
+ax1.set_ylabel('Voltaje (V)', color=color)
+ax1.plot(df.index, df['Voltaje_V'], color=color, label='Voltaje (V)')
+ax1.tick_params(axis='y', labelcolor=color)
+ax1.grid(True, linestyle='--', alpha=0.6) 
+ax2 = ax1.twinx()
+color = 'tab:red'
+ax2.set_ylabel('Lectura RAW', color=color)
+ax2.plot(df.index, df['Lectura_RAW'], color=color, linestyle='--', alpha=0.7, label='Lectura RAW')
+ax2.tick_params(axis='y', labelcolor=color)
+
+fig.autofmt_xdate(rotation=45)
+
+lines, labels = ax1.get_legend_handles_labels()
+lines2, labels2 = ax2.get_legend_handles_labels()
+ax2.legend(lines + lines2, labels + labels2, loc='upper right')
+
+# Mostrar la gráfica
+plt.show()
+
+print("\nGráfica generada con éxito.")
+print("Muestra las series de 'Voltaje_V' (eje izquierdo) y 'Lectura_RAW' (eje derecho) en función del tiempo.")
